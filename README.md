@@ -1,6 +1,7 @@
 
 # Test Task For Muhammad Waheed
 
+Task contains a laravel mvc project with multi language (English / Arabic), project contains one user in user table and thera are two more tables, one for categories and that must get his records first because it is a foreign key in the product table. project contains of four major pages (Login / Home / Category / Product) home page contains two links for Category and Product Pages and each page of Category and product contains four major buttons (Add / Update / Dalete / Navigate to the other page). the only difference between Category Page and Product Page is the Filter button which takes place only in product page.
 
 ## Pages Reference
 ### **Login (صفحة تسجيل الدخول)**
