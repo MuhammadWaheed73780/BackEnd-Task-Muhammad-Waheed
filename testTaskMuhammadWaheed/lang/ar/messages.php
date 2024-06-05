@@ -1,6 +1,9 @@
 <?php
 
     return [
-        'welcome' => 'مرحبا بك',
+        'Welcome' => 'مرحبا بك',
+        'AddNewProduct' => 'اضافة منتج جديد',
+        'ProductName' => 'اسم المنتج',
+        'WelcomeToTheManageProductsPage' => 'مرحبا لادارة صفحة المنتجات',
     ];
 

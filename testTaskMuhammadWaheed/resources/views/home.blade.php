@@ -8,11 +8,11 @@
     <title>Home</title>
 </head>
 <body>
-    <h1>Welcome to the Home Page</h1>
+    <h1>{{__('Welcome to the Home Page')}}</h1>
     
     <ul>
-        <li><a href="{{ route('Category') }}">Category Page</a></li>    
-        <li><a href="{{ route('Product') }}">Product Page</a></li>
+        <li><a href="{{ route('manage-category', ['locale' => app()->getLocale()]) }}">{{__('Category Page')}}</a></li>    
+        <li><a href="{{ route('manage-products', ['locale' => app()->getLocale()]) }}">{{__('Product Page')}}</a></li>
     </ul>
 </body>
 </html>

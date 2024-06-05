@@ -41,23 +41,23 @@
 </head>
 <body>
     <div class="container">
-        <h2>Login</h2>
-        <form id="loginForm" method="POST" action="{{ route('login') }}">
+        <h2>{{__('Login')}}</h2>
+        <form id="loginForm" method="POST" action="{{ route('loginPost') }}">
             @csrf
 
             <div class="form-group">
-                <label for="email">Email</label>
+                <label for="email">{{__('Email')}}</label>
                 <input id="email" type="email" class="form-control" name="email" required autofocus>
             </div>
 
             <div class="form-group">
-                <label for="password">Password</label>
+                <label for="password">{{__('Password')}}</label>
                 <input id="password" type="password" class="form-control" name="password" required>
             </div>
 
             <div class="form-group">
                 <button type="submit" class="btn btn-primary">
-                    Login
+                    {{__('Login')}}
                 </button>
             </div>
         </form>
@@ -69,7 +69,7 @@
             event.preventDefault(); // Prevent the default form submission
             
             // Fetch API request
-            fetch('{{ route('login') }}', {
+            fetch('{{ route('login', ['locale' => app()->getLocale()]) }}', {
                 method: 'POST',
                 body: new FormData(this),
                 headers: {
@@ -83,7 +83,10 @@
                 console.log(data);
                 if (data.success) {
                     // Redirect to another page upon successful login
-                    window.location.href = '/welcome';
+                    // window.location.href = '/welcome';
+
+                    <button onclick="window.location.href='{{ route('home', ['locale' => app()->getLocale()]) }}'">Welcome</button>
+
                 } else if (data.failed) {
                     // Display error message or handle failed login
                     alert(data.failed.response.msg);

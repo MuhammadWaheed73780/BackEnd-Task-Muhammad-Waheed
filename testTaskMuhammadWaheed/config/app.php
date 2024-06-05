@@ -85,6 +85,12 @@ return [
 
     'locale' => 'en',
 
+    // 'locales' => [
+    //     'en' => 'English',
+    //     'ar' => 'Arabic',
+    //     // ... Add other locales as needed
+    // ],
+
     /*
     |--------------------------------------------------------------------------
     | Application Fallback Locale
@@ -96,7 +102,7 @@ return [
     |
     */
 
-    'fallback_locale' => 'en',
+    'fallback_locale' => 'ar',
 
     /*
     |--------------------------------------------------------------------------
@@ -165,6 +171,7 @@ return [
          */
         App\Providers\AppServiceProvider::class,
         App\Providers\AuthServiceProvider::class,
+        Laravel\Sanctum\SanctumServiceProvider::class,
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,

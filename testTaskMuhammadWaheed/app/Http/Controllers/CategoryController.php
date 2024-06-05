@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
@@ -12,252 +13,250 @@ use Response;
 class CategoryController extends Controller
 {
     //
-    public function AddCat(Request $req)
+
+    public function index(Request $req, $locale)
     {
-        $Validator = Validator::make(($req->all()), 
-        [
+        if (! in_array($locale, ['en', 'ar'])) {
+            abort(400);
+        }
+     
+        App::setLocale($locale);
+
+        // $products = Product::all();
+        $cats = DB::table("Category")->select("*")->get();
+        return view('ManageCategory', ['cats' => $cats, 'locale' => app()->getLocale()]);
+    }
+
+    public function create(Request $req, $locale)
+    {
+        if (! in_array($locale, ['en', 'ar'])) {
+            abort(400);
+        }
+     
+        App::setLocale($locale);
+
+
+        return view('AddCategory');
+    }
+    public function update(Request $req, $locale)
+    {
+        if (! in_array($locale, ['en', 'ar'])) {
+            abort(400);
+        }
+     
+        App::setLocale($locale);
+
+        return view('UpdateCategory');
+    }
+
+    public function delete(Request $req, $locale)
+    {
+        if (! in_array($locale, ['en', 'ar'])) {
+            abort(400);
+        }
+     
+        App::setLocale($locale);
+
+        return view('DeleteCategory');
+    }
+
+    public function AddCategory(Request $req)
+    {
+        $Validator = Validator::make($req->all(), [
             "name" => "required|min:2|max:100",
         ]);
-        
+
         if($Validator->fails())
         {
-            return Response::json(["failed" => [
-                            "status" => 400,
-                            "response" => [
-                                "msg" => "Validation Error",
-                                "errors" => $Validator->errors()
-                                ]
-                            ]
-            ], 400);
+            return redirect()->route('manage-category', ['locale' => app()->getLocale()]);
         }
         else
         {
-            // Insert New Category
-            $Cats = DB::table("Category")->select("*")->where("Name", $req->name)->first();
-            if($Cats)
+            $Category = DB::table("Category")->where("Name", $req->name)->first();
+            if($Category)
             {
-                return Response::json(["failed" => [
-                                "status" => 400,
-                                "response" => [
-                                    "msg" => "Duplicate data",
-                                    "errors" => ["msg" => "Duplicate data"]
-                                    ]
-                                ]
-                ], 400);
+                return redirect()->route('manage-category', ['locale' => app()->getLocale()]);
             }
             else
             {
-                DB::table("Category")->insert(["Name" => $req->name, "created_at" => Carbon::now()->setTimezone("Africa/Cairo")]);
+                DB::table("Category")->insert([
+                    "Name" => $req->name,
+                    "created_at" => Carbon::now()->setTimezone("Africa/Cairo")
+                ]);
 
-                return Response::json(["success" => [
-                    "status" => 200,
-                    "response" => [
-                                        "msg" => "Category added succesfully",
-                                    ]
-                        ]
-                    ], 200);
+                return redirect()->route('manage-category', ['locale' => app()->getLocale()]);
             }
         }
     }
 
-    public function UpdateCat(Request $req)
+    public function UpdateCategory(Request $req)
     {
-        $Validator = Validator::make(($req->all()), 
-        [
-            "name" => "required",
-            "updateName" => "nullable",
+        $Validator = Validator::make($req->all(), [
+            "id" => "required",
+            "name" => "nullable|min:2|max:100",
         ]);
-        
-        if($Validator->fails())
-        {
+
+        if ($Validator->fails()) {
+            return redirect()->route('manage-category', ['locale' => app()->getLocale()]);
+            
             return Response::json(["failed" => [
-                            "status" => 400,
-                            "response" => [
-                                "msg" => "Validation Error",
-                                "errors" => $Validator->errors()
-                                ]
-                            ]
-            ], 400);
+                "status" => 400,
+                "response" => [
+                    "msg" => "Validation Error",
+                    "errors" => $Validator->errors()
+                ]
+            ]], 400);
         }
         else
         {
-            $Cats = DB::table("Category")->select("*")->where("Name", $req->name)->first();
-            if($Cats)
+            $cats = DB::table("Category")->where("id", $req->id)->first();
+            if($cats)
             {
-                $Cats1 = DB::table("Category")->select("*")->where("Name", $req->updateName)->get();
+                $Name = $req->name ?? $cats->Name;
 
-                if(isset($req->updateName) && $req->updateName !== $Cats->Name && sizeof($Cats1) <= 0)
-                {
+                DB::table("Category")->where("id", $req->id)->update([
+                    "Name" => $Name,
+                    "updated_at" => Carbon::now()->setTimezone("Africa/Cairo")
+                ]);
 
-                    DB::table("Category")->where("Name", $req->name)->update(["Name" => $req->updateName, "updated_at" => Carbon::now()->setTimezone("Africa/Cairo")]);
-
-                    return Response::json(["success" => [
+                return redirect()->route('manage-category', ['locale' => app()->getLocale()]);
+                return Response::json([
+                    "success" => [
                         "status" => 200,
                         "response" => [
-                                            "msg" => "Category updated succesfully",
-                                        ]
-                            ]
-                        ], 200);
-                }
-                else
-                {
-                    return Response::json(["failed" => [
-                                    "status" => 400,
-                                    "response" => [
-                                        "msg" => "Category not Updated",
-                                        "errors" => ["msg" => "Category not Updated"]
-                                        ]
-                                    ]
-                    ], 400);
-                }
+                            "msg" => "Category updated successfully",
+                        ]
+                    ]
+                ], 200);                
             }
             else
             {
-                return Response::json(["failed" => [
-                                "status" => 400,
-                                "response" => [
-                                    "msg" => "Category not found",
-                                    "errors" => ["msg" => "Category not found"]
-                                    ]
-                                ]
-                ], 400);
+                return redirect()->route('manage-category', ['locale' => app()->getLocale()]);
             }
         }
     }
 
-    public function DeleteCat(Request $req)
+    public function DeleteCategory(Request $req)
     {
-        $Validator = Validator::make(($req->all()), 
-        [
+        $Validator = Validator::make($req->all(), [
             "id" => "required",
         ]);
-        
-        if($Validator->fails())
-        {
-            return Response::json(["failed" => [
-                            "status" => 400,
-                            "response" => [
-                                "msg" => "Validation Error",
-                                "errors" => $Validator->errors()
-                                ]
-                            ]
-            ], 400);
+
+        if ($Validator->fails()) {
+            return redirect()->route('manage-category', ['locale' => app()->getLocale()]);
         }
         else
         {
-            $Cats = DB::table("Category")->select("*")->where("id", $req->id)->first();
-            if($Cats)
+            $cats = DB::table("Category")->where("id", $req->id)->first();
+            if($cats)
             {
-                DB::table("Category")->where('id', $req->id)->delete();
+                DB::table("Category")->where("id", $req->id)->delete();
 
-                return Response::json(["success" => [
-                    "status" => 200,
-                    "response" => [
-                                        "msg" => "Category deleted succesfully",
-                                    ]
-                        ]
-                    ], 200);
+                return redirect()->route('manage-category', ['locale' => app()->getLocale()]);
+                // return Response::json([
+                //     "success" => [
+                //         "status" => 200,
+                //         "response" => [
+                //             "msg" => "Category deleted successfully",
+                //         ]
+                //     ]
+                // ], 200);
             }
             else
             {
-                return Response::json(["failed" => [
-                                "status" => 400,
-                                "response" => [
-                                    "msg" => "Category not found",
-                                    "errors" => ["msg" => "Category not found"]
-                                    ]
-                                ]
-                ], 400);
+                return redirect()->route('manage-category', ['locale' => app()->getLocale()]);
+                // return Response::json(["failed" => [
+                //     "status" => 400,
+                //     "response" => [
+                //         "msg" => "Product not found",
+                //         "errors" => ["msg" => "Category not found"]
+                //     ]
+                // ]], 400);
             }
         }
     }
 
-    public function ReadCat(Request $req)
+    public function ReadCategoryAPI(Request $req)
     {
-        $Validator = Validator::make(($req->all()), 
-        [
+        $Validator = Validator::make($req->all(), [
             "id" => "nullable",
         ]);
-        
+
         if($Validator->fails())
         {
             return Response::json(["failed" => [
-                            "status" => 400,
-                            "response" => [
-                                "msg" => "Validation Error",
-                                "errors" => $Validator->errors()
-                                ]
-                            ]
-            ], 400);
+                "status" => 400,
+                "response" => [
+                    "msg" => "Validation Error",
+                    "errors" => $Validator->errors()
+                ]
+            ]], 400);
         }
         else
         {
             if(isset($req->id))
             {
-                $Cats = DB::table("Category")->select("*")->where("id", $req->id)->first();
-                if($Cats)
+                $Product = DB::table("Product")->where("id", $req->id)->first();
+                if($Product)
                 {
-                    $Returned = [
-                        "id" => $Cats->id,
-                        "name" => $Cats->Name,
-                        "created_at" => $Cats->created_at,
-                        "updated_at" => $Cats->updated_at,
+                    $imagePath = url('productPictures/' . $Product->Image);
+
+                    $Cat = DB::table("Category")->where("id", $Product->CategoryID)->first();
+                    $CatArr = $Cat ? ["id" => $Cat->id, "name" => $Cat->Name] : ["id" => NULL, "name" => NULL];
+
+                    $ProductData = [
+                        "id" => $Product->id,
+                        "name" => $Product->Name,
+                        "image" => $imagePath,
+                        "category" => $CatArr,
                     ];
-                    return Response::json(["success" => [
-                        "status" => 200,
-                        "response" => [
-                                            "msg" => "Category $req->id",
-                                            "data" => $Returned
-                                        ]
-                            ]
-                        ], 200);
+
+                    // return view('ManageProducts', compact('ProductData'));     //, 'categories'
+                    return view('ManageProducts', ['products' => $products]);
                 }
                 else
                 {
                     return Response::json(["failed" => [
-                                    "status" => 400,
-                                    "response" => [
-                                        "msg" => "Category not found",
-                                        "errors" => ["msg" => "Category not found"]
-                                        ]
-                                    ]
-                    ], 400);
+                        "status" => 400,
+                        "response" => [
+                            "msg" => "Product not found",
+                            "errors" => ["msg" => "Product not found"]
+                        ]
+                    ]], 400);
                 }
             }
             else
             {
-                $Cats = DB::table("Category")->select("*")->get();
-                if(sizeof($Cats) > 0)
+                $Products = DB::table("Product")->get();
+                if(count($Products) > 0)
                 {
-                    $Returned = [];
-                    for($i = 0; $i < sizeof($Cats); $i++)
+                    $ProductArr = [];
+                    foreach ($Products as $Product)
                     {
-                        $Returned[$i] = [
-                            "id" => $Cats[$i]->id,
-                            "name" => $Cats[$i]->Name,
-                            "created_at" => $Cats[$i]->created_at,
-                            "updated_at" => $Cats[$i]->updated_at,
+                        $imagePath = url('productPictures/' . $Product->Image);
+                        $Cat = DB::table("Category")->where("id", $Product->CategoryID)->first();
+                        $CatArr = $Cat ? ["id" => $Cat->id, "name" => $Cat->Name] : ["id" => NULL, "name" => NULL];
+
+                        $ProductData[] = [
+                            "                            id" => $Product->id,
+                            "name" => $Product->Name,
+                            "image" => $imagePath,
+                            "category" => $CatArr,
                         ];
                     }
-                    return Response::json(["success" => [
-                        "status" => 200,
-                        "response" => [
-                                            "msg" => "Categories",
-                                            "data" => $Returned
-                                        ]
-                            ]
-                        ], 200);
+
+                    // return view('ManageProducts', compact('ProductData'));      // , 'categories'
+                    return view('ManageProducts', ['products' => $products]);
                 }
                 else
                 {
                     return Response::json(["failed" => [
-                                    "status" => 400,
-                                    "response" => [
-                                        "msg" => "No categories in DB",
-                                        "errors" => ["msg" => "No categories in DB"]
-                                        ]
-                                    ]
-                    ], 400);
+                        "status" => 400,
+                        "response" => [
+                            "msg" => "Found no Product in DB",
+                            "errors" => ["msg" => "Found no Product in DB"]
+                        ]
+                    ]], 400);
                 }
             }
         }
