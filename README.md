@@ -42,7 +42,7 @@ for Arabic page
 
 #### `Seed Database User Table`
 
-- Use the command php artisan db:seed.
+- Use the command `php artisan db:seed`.
 
 
 ## Authors
