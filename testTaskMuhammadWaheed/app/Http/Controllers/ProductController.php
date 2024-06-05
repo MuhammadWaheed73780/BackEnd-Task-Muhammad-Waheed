@@ -14,66 +14,103 @@ class ProductController extends Controller
 {
     public function index(Request $req, $locale)
     {
-        
-        // App::setLocale($locale); // Set application locale dynamically
-        if (! in_array($locale, ['en', 'ar'])) {
-            abort(400);
+        $UserToken = session('UserToken');
+        if(isset($UserToken))
+        {
+            if (! in_array($locale, ['en', 'ar'])) {
+                abort(400);
+            }
+         
+            App::setLocale($locale);
+    
+            $products = DB::table('Category')
+            ->join('Product', 'Category.id', '=', 'Product.CategoryID')
+            ->select('Product.*', 'Category.Name as categoryName', 'Category.id as categoryId')
+            ->get();
+    
+            return view('ManageProducts', ['products' => $products, "locale" => app()->getLocale()]);
         }
-     
-        App::setLocale($locale);
-
-        $products = DB::table('Category')
-        ->join('Product', 'Category.id', '=', 'Product.CategoryID')
-        ->select('Product.*', 'Category.Name as categoryName', 'Category.id as categoryId')
-        ->get();
-
-        return view('ManageProducts', ['products' => $products, "locale" => app()->getLocale()]);
+        else
+        {
+            return view('login', ['locale' => app()->getLocale()]);
+        }
     }
 
     public function create(Request $req, $locale)
     {
-        // $locale = $req->input('locale');
-        if (! in_array($locale, ['en', 'ar'])) {
-            abort(400);
+        $UserToken = session('UserToken');
+        if(isset($UserToken))
+        {
+            if (! in_array($locale, ['en', 'ar'])) {
+                abort(400);
+            }
+         
+            App::setLocale($locale);
+    
+    
+            return view('AddProduct', ['locale' => app()->getLocale()]);
         }
-     
-        App::setLocale($locale);
-
-
-        return view('AddProduct');
+        else
+        {
+            return view('login', ['locale' => app()->getLocale()]);
+        }
     }
 
     public function update(Request $req, $locale)
     {
-        if (! in_array($locale, ['en', 'ar'])) {
-            abort(400);
+        $UserToken = session('UserToken');
+        if(isset($UserToken))
+        {
+            if (! in_array($locale, ['en', 'ar'])) {
+                abort(400);
+            }
+         
+            App::setLocale($locale);
+    
+            return view('UpdateProduct', ['locale' => app()->getLocale()]);
         }
-     
-        App::setLocale($locale);
-
-        return view('UpdateProduct');
+        else
+        {
+            return view('login', ['locale' => app()->getLocale()]);
+        }
     }
 
     public function delete(Request $req, $locale)
     {
-        if (! in_array($locale, ['en', 'ar'])) {
-            abort(400);
+        $UserToken = session('UserToken');
+        if(isset($UserToken))
+        {
+            if (! in_array($locale, ['en', 'ar'])) {
+                abort(400);
+            }
+         
+            App::setLocale($locale);
+    
+            return view('DeleteProduct', ['locale' => app()->getLocale()]);
         }
-     
-        App::setLocale($locale);
-
-        return view('DeleteProduct');
+        else
+        {
+            return view('login', ['locale' => app()->getLocale()]);
+        }
     }
 
     public function filter(Request $req, $locale)
     {
-        if (! in_array($locale, ['en', 'ar'])) {
-            abort(400);
+        $UserToken = session('UserToken');
+        if(isset($UserToken))
+        {
+            if (! in_array($locale, ['en', 'ar'])) {
+                abort(400);
+            }
+         
+            App::setLocale($locale);
+    
+            return view('FilterProduct', ['locale' => app()->getLocale()]);
         }
-     
-        App::setLocale($locale);
-
-        return view('FilterProduct');
+        else
+        {
+            return view('login', ['locale' => app()->getLocale()]);
+        }
     }
 
     public function AddProduct(Request $req)

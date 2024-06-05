@@ -34,12 +34,21 @@ Route::get('/{locale}', function ($locale)
 
 Route::get('home/{locale}', function ($locale)
 {
-    if(!isset($locale))
+    $UserToken = session('UserToken');
+    if(isset($UserToken))
     {
-        $locale = "en";
+        if(!isset($locale))
+        {
+            $locale = "en";
+        }
+        App::setLocale($locale);
+        return view('home');
+
     }
-    App::setLocale($locale);
-    return view('home');
+    else
+    {
+        return view('login', ['locale' => app()->getLocale()]);
+    }
 
 })->where('locale', '[a-z]{2}')->name('home');
 

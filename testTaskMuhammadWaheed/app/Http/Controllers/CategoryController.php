@@ -16,48 +16,82 @@ class CategoryController extends Controller
 
     public function index(Request $req, $locale)
     {
-        if (! in_array($locale, ['en', 'ar'])) {
-            abort(400);
-        }
-     
-        App::setLocale($locale);
+        $UserToken = session('UserToken');
+        if(isset($UserToken))
+        {
 
-        // $products = Product::all();
-        $cats = DB::table("Category")->select("*")->get();
-        return view('ManageCategory', ['cats' => $cats, 'locale' => app()->getLocale()]);
+            if (! in_array($locale, ['en', 'ar'])) {
+                abort(400);
+            }
+        
+            App::setLocale($locale);
+
+            // $products = Product::all();
+            $cats = DB::table("Category")->select("*")->get();
+            return view('ManageCategory', ['cats' => $cats, 'locale' => app()->getLocale()]);
+        }
+        else
+        {
+            return view('login', ['locale' => app()->getLocale()]);
+        }
     }
 
     public function create(Request $req, $locale)
     {
-        if (! in_array($locale, ['en', 'ar'])) {
-            abort(400);
+        $UserToken = session('UserToken');
+        if(isset($UserToken))
+        {
+            if (! in_array($locale, ['en', 'ar'])) {
+                abort(400);
+            }
+        
+            App::setLocale($locale);
+
+
+            return view('AddCategory', ['locale' => app()->getLocale()]);
         }
-     
-        App::setLocale($locale);
-
-
-        return view('AddCategory');
+        else
+        {
+            return view('login', ['locale' => app()->getLocale()]);
+        }
     }
+
     public function update(Request $req, $locale)
     {
-        if (! in_array($locale, ['en', 'ar'])) {
-            abort(400);
+        $UserToken = session('UserToken');
+        if(isset($UserToken))
+        {
+            if (! in_array($locale, ['en', 'ar'])) {
+                abort(400);
+            }
+         
+            App::setLocale($locale);
+    
+            return view('UpdateCategory', ['locale' => app()->getLocale()]);
         }
-     
-        App::setLocale($locale);
-
-        return view('UpdateCategory');
+        else
+        {
+            return view('login', ['locale' => app()->getLocale()]);
+        }
     }
 
     public function delete(Request $req, $locale)
     {
-        if (! in_array($locale, ['en', 'ar'])) {
-            abort(400);
+        $UserToken = session('UserToken');
+        if(isset($UserToken))
+        {
+            if (! in_array($locale, ['en', 'ar'])) {
+                abort(400);
+            }
+         
+            App::setLocale($locale);
+    
+            return view('DeleteCategory', ['locale' => app()->getLocale()]);
         }
-     
-        App::setLocale($locale);
-
-        return view('DeleteCategory');
+        else
+        {
+            return view('login', ['locale' => app()->getLocale()]);
+        }
     }
 
     public function AddCategory(Request $req)

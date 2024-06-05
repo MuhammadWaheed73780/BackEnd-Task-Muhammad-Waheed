@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Sanctum\Sanctum;
+use Session;
 
 class AuthController extends Controller
 {
@@ -39,7 +40,10 @@ class AuthController extends Controller
         
         if ($user && Hash::check($req->password, $user->password)) {
             // Authentication passed, return success response
-
+            $user = User::where("email", $req->email)->first();
+            $userToken = $user->createToken("auth-token", ["auth-token"], now()->addWeek())->plainTextToken;
+            // Session::set('UserToken', $userToken);
+            session()->put('UserToken', $userToken);
             return redirect()->route('home', ['locale' => app()->getLocale()]);
             return response()->json([
                 "success" => [
